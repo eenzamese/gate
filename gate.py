@@ -8,7 +8,7 @@ from os import listdir, sep
 from os.path import isfile, join, dirname, basename
 
 
-# input comment
+# input comment next
 INPUT_DIR = r"C:\\Users\\User\\cloud\\servers\\"
 OUTPUT_FILE = r"C:\\Users\\User\\cloud\\servers\\filtered.txt"
 
