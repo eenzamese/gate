@@ -4,8 +4,9 @@ import time
 import logging
 import re
 import sys
+import pathlib
 from os import listdir, sep
-from os.path import isfile, join, dirname, basename
+from os.path import isfile, join, dirname
 
 
 # input comment next
@@ -13,22 +14,27 @@ INPUT_DIR = r"C:\\Users\\User\\cloud\\servers\\"
 OUTPUT_FILE = r"C:\\Users\\User\\cloud\\servers\\filtered.txt"
 
 
+# constants
 APP_TMT = 60
 LOG_START_TIME = re.sub(r"\W+", "_", str(time.ctime()))
 
+LOG_FMT_STRING = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+
 if getattr(sys, 'frozen', False):
     app_path = dirname(sys.executable)
-    app_name = basename(sys.executable)
+    app_name = pathlib.Path(sys.executable).stem
     APP_RUNMODE = 'PROD'
     time.sleep(APP_TMT)
 else:
     app_path = dirname(__file__)
-    app_name = basename(__file__)
+    app_name = pathlib.Path(__file__).stem
     APP_RUNMODE = 'TEST'
 
-
-LOG_FMT_STRING = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 LOG_FILENAME = f'{app_path}{sep}{app_name}_{LOG_START_TIME}.log'
+log_handlers = [logging.StreamHandler()]
+
+if APP_RUNMODE == 'PROD':
+    log_handlers = log_handlers.append(logging.FileHandler(LOG_FILENAME))
 
 logger = logging.getLogger(APP_RUNMODE)
 logging.basicConfig(format=LOG_FMT_STRING,
@@ -69,4 +75,3 @@ while True:
     STR_OUT = 'State is OK'
     logger.info(STR_OUT)
     time.sleep(1800)
-
