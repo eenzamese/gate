@@ -1,17 +1,17 @@
-<div align="center"><h1 align="left">Switch active NIC based on Internet speed</h1></div>
+<div align="center"><h1 align="left">Connection checker</h1></div>
 
 
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 [![Product Name Screen Shot][product-screen]](https://example.com)
 
-Switch active NIC based on Internet speed
+Check connections for IP list
 
 ## Installation
 
 Clone the repo
    ```sh
-   git clone https://github.com/eenzamese/speed_switch.git
+   git clone https://github.com/eenzamese/gate.git
    ```
 
 ## Usage
@@ -28,7 +28,7 @@ INET_HOST = '8.8.8.8'
 
 Run python script
    ```sh
-   python3 speed_switch/speed_switch.py
+   python3 gate/gate.py
    ```
 <!-- LICENSE -->
 
@@ -36,7 +36,7 @@ Run python script
 
 eenzamese@gmail.com
 
-Project Link: [https://github.com/eenzamese/speed_switch](https://github.com/eenzamese/speed_switch)
+Project Link: [https://github.com/eenzamese/gate](https://github.com/eenzamese/speed_switch)
 
 
 
