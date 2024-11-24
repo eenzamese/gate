@@ -34,7 +34,7 @@ Run python script
 
 eenzamese@gmail.com
 
-Project Link: [https://github.com/eenzamese/gate](https://github.com/eenzamese/speed_switch)
+Project Link: [https://github.com/eenzamese/gate](https://github.com/eenzamese/gate)
 
 
 
