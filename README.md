@@ -38,4 +38,4 @@ Project Link: [https://github.com/eenzamese/gate](https://github.com/eenzamese/g
 
 
 
-[product-screen]: sheme/simple_scheme.drawio.png
+[product-screen]: scheme/simple_scheme.drawio.png
