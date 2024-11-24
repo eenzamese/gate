@@ -19,11 +19,9 @@ Clone the repo
 Edit inputs in speed_switch.py
 ```py
 # inputs
-APP_TMT = 60
-SUCCESS_TMT = 600
-FAIL_TMT = 60
-ERR_TMT = 10
-INET_HOST = '8.8.8.8'
+# input comment next
+INPUT_DIR = r"C:\\Users\\User\\cloud\\servers\\"
+OUTPUT_FILE = r"C:\\Users\\User\\cloud\\servers\\filtered.txt"
 ```
 
 Run python script
