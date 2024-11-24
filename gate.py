@@ -1,4 +1,4 @@
-"""Gates filter"""
+"""Addresses filter"""
 import socket
 import time
 import logging
