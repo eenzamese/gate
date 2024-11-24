@@ -1,16 +1,34 @@
-<br />
-<div align="center"><h1 align="left">Additional bin files</h1></div>
+<div align="center"><h1 align="left">Switch active NIC based on Internet speed</h1></div>
+
 
 <!-- ABOUT THE PROJECT -->
 ## About The Project
+[![Product Name Screen Shot][product-screen]](https://example.com)
 
-Just needed utilities from https://www.sqlite.org (sqlite3 & sqlite3.exe) and https://learn.microsoft.com/en-us/sysinternals/downloads/sysinternals-suite (PsExec64.exe)
+Switch active NIC based on Internet speed
 
-## Usage
+## Installation
 
 Clone the repo
    ```sh
-   git clone https://github.com/eenzamese/bin.git
+   git clone https://github.com/eenzamese/speed_switch.git
+   ```
+
+## Usage
+
+Edit inputs in speed_switch.py
+```py
+# inputs
+APP_TMT = 60
+SUCCESS_TMT = 600
+FAIL_TMT = 60
+ERR_TMT = 10
+INET_HOST = '8.8.8.8'
+```
+
+Run python script
+   ```sh
+   python3 speed_switch/speed_switch.py
    ```
 <!-- LICENSE -->
 
@@ -18,7 +36,8 @@ Clone the repo
 
 eenzamese@gmail.com
 
-Project Link: [https://github.com/eenzamese/bin](https://github.com/eenzamese/bin)
+Project Link: [https://github.com/eenzamese/speed_switch](https://github.com/eenzamese/speed_switch)
 
-[linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
-[linkedin-url]: https://linkedin.com/in/linkedin_username
+
+
+[product-screen]: sheme/simple_scheme.drawio.png
