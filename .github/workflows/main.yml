@@ -14,7 +14,7 @@ jobs:
           python_ver: '3.11'
           spec: 'auto.py'
           requirements: 'requirements.txt'
-          upload_exe_with_name: 'auto.exe'
+          upload_exe_with_name: 'gate.exe'
           options: --onefile   
       - name: Release
         uses: softprops/action-gh-release@v2
