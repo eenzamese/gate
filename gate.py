@@ -10,8 +10,7 @@ from os.path import isfile, join, dirname
 
 
 # input comment next
-INPUT_DIR = r"C:\\Users\\User\\cloud\\servers\\"
-OUTPUT_FILE = r"C:\\Users\\User\\cloud\\servers\\filtered.txt"
+
 
 
 # constants
@@ -30,6 +29,8 @@ else:
     app_name = pathlib.Path(__file__).stem
     APP_RUNMODE = 'TEST'
 
+INPUT_DIR = f'{app_path}{sep}servers.txt'
+OUTPUT_FILENAME = f'{app_path}{sep}{app_name}_{LOG_START_TIME}.txt'
 LOG_FILENAME = f'{app_path}{sep}{app_name}_{LOG_START_TIME}.log'
 log_handlers = [logging.StreamHandler()]
 
@@ -40,8 +41,7 @@ logger = logging.getLogger(APP_RUNMODE)
 logging.basicConfig(format=LOG_FMT_STRING,
                     datefmt='%d.%m.%Y %H:%M:%S',
                     level=logging.INFO, # NOTSET/DEBUG/INFO/WARNING/ERROR/CRITICAL
-                    handlers=[logging.FileHandler(LOG_FILENAME),
-                              logging.StreamHandler()])
+                    handlers=log_handlers)
 
 
 while True:
