@@ -29,8 +29,8 @@ else:
     app_name = pathlib.Path(__file__).stem
     APP_RUNMODE = 'TEST'
 
-INPUT_DIR = f'{app_path}{sep}servers.txt'
-OUTPUT_FILENAME = f'{app_path}{sep}{app_name}_{LOG_START_TIME}.txt'
+INPUT_DIR = f'{app_path}{sep}servers{sep}'
+OUTPUT_FILENAME = f'{app_path}{sep}servers{sep}{app_name}_{LOG_START_TIME}.txt'
 LOG_FILENAME = f'{app_path}{sep}{app_name}_{LOG_START_TIME}.log'
 log_handlers = [logging.StreamHandler()]
 
