@@ -50,7 +50,7 @@ while True:
     try:
         onlyfiles = [f for f in listdir(INPUT_DIR) if isfile(join(INPUT_DIR, f))]
         actual_files = min([int(af.split('_')[1]) for af in onlyfiles if 'servers' in af])
-        actual_file = [af for af in onlyfiles if actual_files in af]
+        actual_file = [af for af in str(onlyfiles) if actual_files in af]
         direct_file = f"{INPUT_DIR}{actual_file[0]}"
         with open(direct_file, 'r', errors='ignore') as file: # pylint: disable=unspecified-encoding
             data_r = file.read()
