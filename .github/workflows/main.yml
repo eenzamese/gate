@@ -19,6 +19,6 @@ jobs:
       - name: Release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: foo-${{ github.run_id }}-${{ github.run_attempt }}
-          name: bar-${{ github.run_id }}-${{ github.run_attempt }}
+          tag_name: tag-${{ github.run_id }}-${{ github.run_attempt }}
+          name: rel-${{ github.run_id }}-${{ github.run_attempt }}
           files: ./dist/gate.exe
