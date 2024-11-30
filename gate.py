@@ -2,6 +2,7 @@
 import socket
 import time
 import logging
+import traceback
 import re
 import sys
 import pathlib
@@ -56,6 +57,7 @@ while True:
         data_r = re.findall(r'[0-9]+(?:\.[0-9]+){3}', data_r)
     except Exception as ex: # pylint: disable=broad-exception-caught
         logger.warning(str(ex))
+        logger.warning(traceback.format_exc())
         time.sleep(3)
         continue
     for gate_address in data_r:
