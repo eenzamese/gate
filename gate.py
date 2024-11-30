@@ -72,7 +72,7 @@ while True:
             logger.info(STR_OUT)
             continue
         sock.close()
-    with open(OUTPUT_FILE, 'w') as file: # pylint: disable=unspecified-encoding
+    with open(OUTPUT_FILENAME, 'w') as file: # pylint: disable=unspecified-encoding
         DATA_W = '\n'.join(result_gates)
         file.write(DATA_W)
     STR_OUT = 'State is OK'
