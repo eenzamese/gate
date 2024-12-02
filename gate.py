@@ -49,7 +49,7 @@ while True:
     result_gates = []
     try:
         onlyfiles = [f for f in listdir(INPUT_DIR) if isfile(join(INPUT_DIR, f))]
-        actual_files = min([int(af.split('_')[1]) for af in onlyfiles if 'servers' in af])
+        actual_files = max([int(af.split('_')[1]) for af in onlyfiles if 'servers' in af])
         actual_file = [af for af in onlyfiles if str(actual_files) in af]
         direct_file = f"{INPUT_DIR}{actual_file[0]}"
         with open(direct_file, 'r', errors='ignore') as file: # pylint: disable=unspecified-encoding
