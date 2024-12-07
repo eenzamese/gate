@@ -1,4 +1,4 @@
-<div align="center"><h1 align="left">Connection checker</h1></div>
+<div align="center"><h1 align="left">Gate checker</h1></div>
 
 
 <!-- ABOUT THE PROJECT -->
