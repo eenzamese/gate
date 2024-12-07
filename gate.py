@@ -17,7 +17,6 @@ from os.path import isfile, join, dirname
 # constants
 APP_TMT = 60
 LOG_START_TIME = re.sub(r"\W+", "_", str(time.ctime()))
-
 LOG_FMT_STRING = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 
 if getattr(sys, 'frozen', False):
@@ -31,7 +30,6 @@ else:
     APP_RUNMODE = 'TEST'
 
 INPUT_DIR = f'{app_path}{sep}servers{sep}'
-OUTPUT_FILENAME = f'{app_path}{sep}servers{sep}{app_name}_{LOG_START_TIME}.txt'
 LOG_FILENAME = f'{app_path}{sep}{app_name}_{LOG_START_TIME}.log'
 log_handlers = [logging.StreamHandler()]
 
@@ -52,6 +50,7 @@ while True:
         actual_files = max([int(af.split('_')[1]) for af in onlyfiles if 'servers' in af])
         actual_file = [af for af in onlyfiles if str(actual_files) in af]
         direct_file = f"{INPUT_DIR}{actual_file[0]}"
+        direct_file_out = f"{INPUT_DIR}{actual_file[0]}_out"
         with open(direct_file, 'r', errors='ignore') as file: # pylint: disable=unspecified-encoding
             data_r = file.read()
         data_r = re.findall(r'[0-9]+(?:\.[0-9]+){3}', data_r)
@@ -72,7 +71,7 @@ while True:
             logger.info(STR_OUT)
             continue
         sock.close()
-    with open(OUTPUT_FILENAME, 'w') as file: # pylint: disable=unspecified-encoding
+    with open(direct_file_out, 'w') as file: # pylint: disable=unspecified-encoding
         DATA_W = '\n'.join(result_gates)
         file.write(DATA_W)
     STR_OUT = 'State is OK'
