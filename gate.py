@@ -18,12 +18,10 @@ from os.path import isfile, join, dirname
 APP_TMT = 60
 LOG_START_TIME = re.sub(r"\W+", "_", str(time.ctime()))
 LOG_FMT_STRING = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-log_handlers = [logging.StreamHandler()]
 
 if getattr(sys, 'frozen', False):
     app_path = dirname(sys.executable)
     app_name = pathlib.Path(sys.executable).stem
-    log_handlers.append(logging.FileHandler(LOG_FILENAME))
     APP_RUNMODE = 'PROD'
     time.sleep(APP_TMT)
 else:
@@ -31,8 +29,11 @@ else:
     app_name = pathlib.Path(__file__).stem
     APP_RUNMODE = 'TEST'
 
+
 INPUT_DIR = f'{app_path}{sep}servers{sep}'
 LOG_FILENAME = f'{app_path}{sep}{app_name}_{LOG_START_TIME}.log'
+log_handlers = [logging.StreamHandler(),logging.FileHandler(LOG_FILENAME)]
+
 
 logger = logging.getLogger(APP_RUNMODE)
 logging.basicConfig(format=LOG_FMT_STRING,
