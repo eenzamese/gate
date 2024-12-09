@@ -6,12 +6,9 @@ import traceback
 import re
 import sys
 import pathlib
-from os import listdir, sep
-from os.path import isfile, join, dirname
-
-
-# input comment next
-
+import random
+from os import listdir, sep, mkdir
+from os.path import isfile, join, dirname, exists
 
 
 # constants
@@ -31,7 +28,10 @@ else:
 
 
 INPUT_DIR = f'{app_path}{sep}servers{sep}'
-LOG_FILENAME = f'{app_path}{sep}{app_name}_{LOG_START_TIME}.log'
+LOG_DIR = f'{app_path}{sep}logs'
+if not exists(LOG_DIR):
+    mkdir(LOG_DIR)
+LOG_FILENAME = f'{LOG_DIR}{sep}{app_name}_{LOG_START_TIME}.log'
 log_handlers = [logging.StreamHandler(),logging.FileHandler(LOG_FILENAME)]
 
 
@@ -51,7 +51,7 @@ while True:
         actual_file = [af for af in onlyfiles if str(actual_files) in af]
         direct_file = f"{INPUT_DIR}{actual_file[0]}"
         logger.info('Needed file is %s', direct_file)
-        direct_file_out = f"{INPUT_DIR}{actual_file[0]}_out"
+        direct_file_out = f"{INPUT_DIR}{actual_file[0]}_out_{str(random.randint(0, 1000))}"
         logger.info('Needed output file is %s', direct_file_out)
         with open(direct_file, 'r', errors='ignore') as file: # pylint: disable=unspecified-encoding
             data_r = file.read()
