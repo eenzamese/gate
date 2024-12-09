@@ -51,7 +51,7 @@ while True:
         actual_file = [af for af in onlyfiles if str(actual_files) in af]
         direct_file = f"{INPUT_DIR}{actual_file[0]}"
         logger.info('Needed file is %s', direct_file)
-        direct_file_out = f"{INPUT_DIR}{actual_file[0]}_out_{str(random.randint(0, 1000))}"
+        direct_file_out = f"{INPUT_DIR}{actual_file[0]}_out_{str(random.randint(0, 1000))}.txt"
         logger.info('Needed output file is %s', direct_file_out)
         with open(direct_file, 'r', errors='ignore') as file: # pylint: disable=unspecified-encoding
             data_r = file.read()
