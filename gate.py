@@ -18,10 +18,12 @@ from os.path import isfile, join, dirname
 APP_TMT = 60
 LOG_START_TIME = re.sub(r"\W+", "_", str(time.ctime()))
 LOG_FMT_STRING = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+log_handlers = [logging.StreamHandler()]
 
 if getattr(sys, 'frozen', False):
     app_path = dirname(sys.executable)
     app_name = pathlib.Path(sys.executable).stem
+    log_handlers.append(logging.FileHandler(LOG_FILENAME))
     APP_RUNMODE = 'PROD'
     time.sleep(APP_TMT)
 else:
@@ -31,10 +33,6 @@ else:
 
 INPUT_DIR = f'{app_path}{sep}servers{sep}'
 LOG_FILENAME = f'{app_path}{sep}{app_name}_{LOG_START_TIME}.log'
-log_handlers = [logging.StreamHandler()]
-
-if APP_RUNMODE == 'PROD':
-    log_handlers = log_handlers.append(logging.FileHandler(LOG_FILENAME))
 
 logger = logging.getLogger(APP_RUNMODE)
 logging.basicConfig(format=LOG_FMT_STRING,
@@ -46,11 +44,14 @@ logging.basicConfig(format=LOG_FMT_STRING,
 while True:
     result_gates = []
     try:
+        logger.info('Searching files in INPUT directory %s', INPUT_DIR)
         onlyfiles = [f for f in listdir(INPUT_DIR) if isfile(join(INPUT_DIR, f))]
         actual_files = max([int(af.split('_')[1]) for af in onlyfiles if 'servers' in af])
         actual_file = [af for af in onlyfiles if str(actual_files) in af]
         direct_file = f"{INPUT_DIR}{actual_file[0]}"
+        logger.info('Needed file is %s', direct_file)
         direct_file_out = f"{INPUT_DIR}{actual_file[0]}_out"
+        logger.info('Needed output file is %s', direct_file_out)
         with open(direct_file, 'r', errors='ignore') as file: # pylint: disable=unspecified-encoding
             data_r = file.read()
         data_r = re.findall(r'[0-9]+(?:\.[0-9]+){3}', data_r)
@@ -71,6 +72,7 @@ while True:
             logger.info(STR_OUT)
             continue
         sock.close()
+    logger.info('Try to create %s', direct_file_out)
     with open(direct_file_out, 'w') as file: # pylint: disable=unspecified-encoding
         DATA_W = '\n'.join(result_gates)
         file.write(DATA_W)
