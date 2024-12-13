@@ -1,6 +1,6 @@
 # -*- mode: python -*-
 
-a = Analysis(['submodule_public.py'],
+a = Analysis(['gate.py'],
              binaries=[],
              datas=[],
              hiddenimports=[],
@@ -16,7 +16,7 @@ exe = EXE(
     a.binaries,
     a.zipfiles,
     a.datas,
-    name='submodule_public',
+    name='gate',
     debug=False,
     strip=False,
     upx=True,
