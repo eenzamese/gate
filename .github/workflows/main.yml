@@ -3,6 +3,7 @@ name: "Make installer action"
 on:
   push:
     branches: ["main"]
+  workflow_call:
 
 jobs:
   build:
