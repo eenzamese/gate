@@ -10,7 +10,7 @@ import random
 from os import listdir, sep, mkdir
 from os.path import isfile, join, dirname, exists
 
-
+# TODO: correct paths
 # constants
 APP_TMT = 60
 LOG_START_TIME = re.sub(r"\W+", "_", str(time.ctime()))
