@@ -33,6 +33,8 @@ INPUT_DIR = f'{app_path}{sep}servers{sep}'
 LOG_DIR = f'{app_path}{sep}logs'
 if not exists(LOG_DIR):
     mkdir(LOG_DIR)
+if not exists(INPUT_DIR):
+    mkdir(INPUT_DIR)
 LOG_FILENAME = f'{LOG_DIR}{sep}{app_name}_{LOG_START_TIME}.log'
 log_handlers = [logging.StreamHandler(),logging.FileHandler(LOG_FILENAME)]
 
