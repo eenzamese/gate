@@ -68,7 +68,7 @@ logging.basicConfig(format=LOG_FMT_STRING,
                     handlers=log_handlers)
 
 try:
-    with open(f"{app_name}.config", 'r', encoding='UTF-8') as cf:
+    with open(f"{app_path}{sep}{app_name}.config", 'r', encoding='UTF-8') as cf:
         conf = json.load(cf)
 except Exception as ex: # pylint: disable=broad-exception-caught
     logger.critical("No config file found")
