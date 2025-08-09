@@ -20,6 +20,7 @@ from os.path import isfile, join, dirname, exists
 import smtplib
 import logging
 import socket
+import paramiko
 from Crypto.Hash import MD5
 from Crypto.Util.Padding import unpad
 from Crypto.Util.Padding import pad
@@ -80,6 +81,10 @@ mail_to = conf['mail_to']
 got_from = conf['got_from']
 enc_key = conf['enc_key']
 enc_iv = conf['enc_iv']
+mktk_p = conf['mktk_p']
+mktk_server = conf['mktk_server']
+mktk_port = conf['mktk_port']
+mktk_u = conf['mktk_u']
 
 
 def decrypt(ciphertext, password):
@@ -131,7 +136,21 @@ def encrypt(plaintext, password):
     # Combine salt and encrypted data
     # encrypted_bytes = base64.b64encode(b'Salted__' + salt + encrypted)
     return base64.b64encode(encrypted)
+    
+def ssh_connect(host, port, username, password):
+    """Establish SSH connection to MikroTik."""
+    client = paramiko.SSHClient()
+    client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+    client.connect(hostname=host, port=port, username=username, password=password,look_for_keys=False)
+    return client
 
+def exec_command(ssh_client, command):
+    """Execute command on MikroTik via SSH and return output."""
+    stdin, stdout, stderr = ssh_client.exec_command(command)
+    output = stdout.read().decode().strip()
+    error = stderr.read().decode().strip()
+    return output, error
+    
 def save_mails(in_mail_server, in_mail_l, in_mail_p):
     """Download emails"""
     logger.info('Connecting to %s', in_mail_server)
@@ -265,10 +284,44 @@ while True:
         logger.warning(traceback.format_exc())
         time.sleep(3)
         continue
-    for gate_address in data_r:
+    for gate_address in data_r:        
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         result = sock.connect_ex((gate_address, 443))
         if result == 0:
+            ssh_client = ssh_connect(mktk_server, mktk_port, mktk_u, mktk_p)
+            logger.info("Connected to MikroTik")
+            add_sstp_cmd = (
+                            f"/interface sstp-client add "
+                            f"name=sstp-out "
+                            f"connect-to={gate_address} "
+                            f"user=vpn "
+                            f"password=vpn "
+                            f"verify-server-address-from-certificate=no "
+                            f"disabled=no"
+                           )
+            logger.info("Adding SSTP client interface...")
+            exec_command(ssh_client, add_sstp_cmd)
+            logger.info('SSTP created')
+            time.sleep(5)
+            check_sstp_cmd = (
+                            f"/interface sstp-client monitor 0 once"
+                           )
+            out, err = exec_command(ssh_client, check_sstp_cmd)
+            logger.info('SSTP checked')
+            a = []
+            if 'connected' in out:
+                logger.info('SSTP done')
+                rm_sstp_cmd = (
+                                f"/interface sstp-client remove 0"
+                               )
+                out, err = exec_command(ssh_client, rm_sstp_cmd)
+            else:
+                logger.info('SSTP not done')
+                rm_sstp_cmd = (
+                                f"/interface sstp-client remove 0"
+                               )
+                out, err = exec_command(ssh_client, rm_sstp_cmd)
+                continue
             str_out = f'Gate address is {gate_address}' # pylint: disable=invalid-name
             logger.info(str_out)
             result_gates.append(gate_address)
