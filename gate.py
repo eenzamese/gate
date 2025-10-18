@@ -55,9 +55,11 @@ INPUT_DIR = f'{app_path}{sep}servers{sep}'
 LOG_DIR = f'{app_path}{sep}logs'
 
 if not exists(LOG_DIR):
-    mkdir(LOG_DIR)
-if not exists(INPUT_DIR):
-    mkdir(INPUT_DIR)
+    try:
+        mkdir(LOG_DIR)
+    except Exception as ex:
+        print('Log directory creation fails. Exit')
+        sys.exit()
 LOG_FILENAME = f'{LOG_DIR}{sep}{app_name}_{LOG_START_TIME}.log'
 log_handlers = [logging.StreamHandler(),logging.FileHandler(LOG_FILENAME)]
 
@@ -68,6 +70,13 @@ logging.basicConfig(format=LOG_FMT_STRING,
                     level=logging.INFO, # NOTSET/DEBUG/INFO/WARNING/ERROR/CRITICAL
                     handlers=log_handlers)
 
+for el in [INPUT_DIR]:
+    if not exists(el):
+        try:
+            Path(el).mkdir(parents=True, exist_ok=True)
+        except Exception as ex:
+            logger.critical("Can't create input directories")
+            sys.exit()
 try:
     with open(f"{app_path}{sep}{app_name}.config", 'r', encoding='UTF-8') as cf:
         conf = json.load(cf)
