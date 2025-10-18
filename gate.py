@@ -11,20 +11,32 @@ import os.path
 import re
 import sys
 import secrets
+import socket
 import base64
 import traceback
-import pathlib
 import random
+import pathlib
+import platform
 from os import listdir, sep, mkdir
 from os.path import isfile, join, dirname, exists
 import smtplib
 import logging
-import socket
 import paramiko
 from Crypto.Hash import MD5
 from Crypto.Util.Padding import unpad
 from Crypto.Util.Padding import pad
 from Crypto.Cipher import AES
+
+ident = md5(';fadkjdf;lajkdf'.encode('UTF-8')).hexdigest()
+
+if platform.system() == 'Linux':
+    try:
+        lock = socket.socket(socket.AF_UNIX, socket.SOCK_DGRAM)
+        lock.bind('\0%s' % ident)
+        print('First instance starts')
+    except Exception as ex:
+        print(str(ex))
+        sys.exit()
 
 #if plat == 'Linux':
 #    import syslog
