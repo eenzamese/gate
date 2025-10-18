@@ -186,7 +186,12 @@ def save_mails(in_mail_server, in_mail_l, in_mail_p):
             decrypted = decrypt(attach, vy_password)
             print("Decrypted ciphertext (base64):", decrypted)
             decrypted = base64.b64decode(decrypted)
-            open(INPUT_DIR+msg['Subject'], 'wb').write(decrypted)
+            try:
+                open(INPUT_DIR+msg['Subject'], 'wb').write(decrypted)
+            except Exception as ex:
+                logger.critical("Can't create write into input directories")
+                logger.critical("Exception is %s", str(ex))
+                sys.exit()
             time.sleep(5)
         continue
     imap.logout()
