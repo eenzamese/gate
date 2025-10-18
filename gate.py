@@ -28,12 +28,12 @@ from Crypto.Util.Padding import unpad
 from Crypto.Util.Padding import pad
 from Crypto.Cipher import AES
 
-ident = md5(';fadkjdf;lajkdf'.encode('UTF-8')).hexdigest()
+IDENT = md5(';fadkjdf;lajkdf'.encode('UTF-8')).hexdigest()
 
 if platform.system() == 'Linux':
     try:
         lock = socket.socket(socket.AF_UNIX, socket.SOCK_DGRAM)
-        lock.bind('\0%s' % ident)
+        lock.bind('\0%s' % IDENT)
         print('First instance starts')
     except Exception as ex:
         print(str(ex))
