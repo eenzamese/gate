@@ -96,17 +96,23 @@ try:
 except Exception as ex: # pylint: disable=broad-exception-caught
     logger.critical("No config file found")
     sys.exit()
-mail_server = conf['mail_server']
-mail_l = conf['mail_l']
-mail_p = conf['mail_p']
-mail_to = conf['mail_to']
-got_from = conf['got_from']
-enc_key = conf['enc_key']
-enc_iv = conf['enc_iv']
-mktk_p = conf['mktk_p']
-mktk_server = conf['mktk_server']
-mktk_port = conf['mktk_port']
-mktk_u = conf['mktk_u']
+
+try:
+    mail_server = conf['mail_server']
+    mail_l = conf['mail_l']
+    mail_p = conf['mail_p']
+    mail_to = conf['mail_to']
+    got_from = conf['got_from']
+    enc_key = conf['enc_key']
+    enc_iv = conf['enc_iv']
+    mktk_p = conf['mktk_p']
+    mktk_server = conf['mktk_server']
+    mktk_port = conf['mktk_port']
+    mktk_u = conf['mktk_u']
+except Exception as ex: # pylint: disable=broad-exception-caught
+    logger.critical("Some necessary configuration parameters not found")
+    logger.critical("Exception is %s", str(ex))
+    sys.exit()
 
 
 def decrypt(ciphertext, password):
