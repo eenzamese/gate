@@ -16,6 +16,7 @@ import base64
 import traceback
 import random
 import pathlib
+from hashlib import md5
 import platform
 from os import listdir, sep, mkdir
 from os.path import isfile, join, dirname, exists
