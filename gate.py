@@ -35,7 +35,7 @@ if platform.system() == 'Linux':
         lock = socket.socket(socket.AF_UNIX, socket.SOCK_DGRAM)
         lock.bind(f'\0{IDENT}')
         print('First instance starts')
-    except Exception as ex:
+    except Exception as ex: # pylint: disable=broad-exception-caught
         print(str(ex))
         sys.exit()
 
