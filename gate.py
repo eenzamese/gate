@@ -14,6 +14,7 @@ import secrets
 import socket
 import base64
 import traceback
+import validators
 import random
 import pathlib
 from hashlib import md5
@@ -70,7 +71,7 @@ LOG_DIR = f'{app_path}{sep}logs'
 if not exists(LOG_DIR):
     try:
         mkdir(LOG_DIR)
-    except Exception as ex:
+    except Exception as ex: # pylint: disable=broad-exception-caught
         print('Log directory creation fails. Exit')
         sys.exit()
 LOG_FILENAME = f'{LOG_DIR}{sep}{app_name}_{LOG_START_TIME}.log'
@@ -114,7 +115,10 @@ except Exception as ex: # pylint: disable=broad-exception-caught
     logger.critical("Exception is %s", str(ex))
     sys.exit()
 
-
+if not validators.url(mail_server):
+    logger.critical("Mail server is incorrect. Exit")
+    sys.exit()
+    
 def decrypt(ciphertext, password):
     """Decription Crypto-JS compatible"""
     encryptedData = base64.b64decode(ciphertext) # pylint: disable=invalid-name
@@ -193,7 +197,7 @@ def save_mails(in_mail_server, in_mail_l, in_mail_p):
     status, search_data = imap.search(None, f'FROM "{got_from}" SINCE {l_time}')
     for msg_id in search_data[0].split():
         msg_id_str = msg_id.decode('utf-8')
-        logger.info(f"Fetching message %s of %s", (msg_id_str, nmessages))
+        logger.info("Fetching message %s of %s", msg_id_str, nmessages))
         status, msg_data = imap.fetch(msg_id, '(RFC822)')
         msg_raw = msg_data[0][1]
         msg = email.message_from_bytes(msg_raw, _class = email.message.EmailMessage)
@@ -207,7 +211,7 @@ def save_mails(in_mail_server, in_mail_l, in_mail_p):
             decrypted = base64.b64decode(decrypted)
             try:
                 open(INPUT_DIR+msg['Subject'], 'wb').write(decrypted)
-            except Exception as ex:
+            except Exception as ex: # pylint: disable=broad-exception-caught
                 logger.critical("Can't create write into input directories")
                 logger.critical("Exception is %s", str(ex))
                 sys.exit()
