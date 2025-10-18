@@ -116,8 +116,17 @@ except Exception as ex: # pylint: disable=broad-exception-caught
     logger.critical("Exception is %s", str(ex))
     sys.exit()
 
-if not validators.url(mail_server):
+if not validators.url(f"https://{mail_server}"):
     logger.critical("Mail server is incorrect. Exit")
+    sys.exit()
+if not validators.email(mail_l):
+    logger.critical("Email used as login is incorrect. Exit")
+    sys.exit()
+if not validators.email(mail_to):
+    logger.critical("Email used as destinatioin is incorrect. Exit")
+    sys.exit()
+if not validators.email(got_from):
+    logger.critical("Email used as source is incorrect. Exit")
     sys.exit()
     
 def decrypt(ciphertext, password):
