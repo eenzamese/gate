@@ -37,7 +37,8 @@ if platform.system() == 'Linux':
         lock.bind(f'\0{IDENT}')
         print('First instance starts')
     except Exception as ex: # pylint: disable=broad-exception-caught
-        print(str(ex))
+        print("Can't start. Something went wrong")
+        print(f"Exception is {str(ex)}. Exit")
         sys.exit()
 
 #if plat == 'Linux':
