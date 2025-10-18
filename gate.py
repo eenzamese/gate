@@ -33,7 +33,7 @@ IDENT = md5(';fadkjdf;lajkdf'.encode('UTF-8')).hexdigest()
 if platform.system() == 'Linux':
     try:
         lock = socket.socket(socket.AF_UNIX, socket.SOCK_DGRAM)
-        lock.bind('\0%s' % IDENT)
+        lock.bind(f'\0{IDENT}')
         print('First instance starts')
     except Exception as ex:
         print(str(ex))
