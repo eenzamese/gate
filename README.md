@@ -9,10 +9,7 @@ Check connections for IP list
 
 ## Installation
 
-Clone the repo
-   ```sh
-   git clone https://github.com/eenzamese/gate.git
-   ```
+No installation needed
 
 ## Usage
 
