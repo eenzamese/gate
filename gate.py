@@ -9,23 +9,22 @@ import time
 import json
 import os.path
 import re
-import validators
 import sys
 import secrets
 import socket
 import base64
 import traceback
-import validators
 import random
 import pathlib
 from pathlib import Path
 from hashlib import md5
 import platform
-from os import listdir, sep, mkdir
+from os import listdir, sep
 from os.path import isfile, join, dirname, exists
 import smtplib
 import logging
 import paramiko
+import validators
 from Crypto.Hash import MD5
 from Crypto.Util.Padding import unpad
 from Crypto.Util.Padding import pad
@@ -88,7 +87,7 @@ for el in [INPUT_DIR]:
     if not exists(el):
         try:
             Path(el).mkdir(parents=True, exist_ok=True)
-        except Exception as ex:
+        except Exception as ex: # pylint: disable=broad-exception-caught
             logger.critical("Can't create input directories")
             sys.exit()
 try:
@@ -98,6 +97,9 @@ except Exception as ex: # pylint: disable=broad-exception-caught
     logger.critical("No config file found or it's not a valid json")
     sys.exit()
 
+if len([el for el in conf]) != 11:
+    logger.critical("Some necessary configuration parameters not found. Exit")
+    sys.exit()
 
 try:
     mail_server = conf['mail_server']
@@ -181,21 +183,26 @@ def encrypt(plaintext, password):
     # Combine salt and encrypted data
     # encrypted_bytes = base64.b64encode(b'Salted__' + salt + encrypted)
     return base64.b64encode(encrypted)
-    
+
 def ssh_connect(host, port, username, password):
     """Establish SSH connection to MikroTik."""
     client = paramiko.SSHClient()
     client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-    client.connect(hostname=host, port=port, username=username, password=password,look_for_keys=False)
+    client.connect(hostname=host,
+                   port=port,
+                   username=username,
+                   password=password,
+                   look_for_keys=False)
     return client
 
-def exec_command(ssh_client, command):
+def exec_command(in_ssh_client, command):
     """Execute command on MikroTik via SSH and return output."""
-    stdin, stdout, stderr = ssh_client.exec_command(command)
+    stdin, stdout, stderr = in_ssh_client.exec_command(command)
+    logger.debug("Standard input was %s", stdin)
     output = stdout.read().decode().strip()
     error = stderr.read().decode().strip()
     return output, error
-    
+
 def save_mails(in_mail_server, in_mail_l, in_mail_p):
     """Download emails"""
     logger.info('Connecting to %s', in_mail_server)
@@ -229,6 +236,8 @@ def save_mails(in_mail_server, in_mail_l, in_mail_p):
                 logger.critical("Exception is %s", str(ex))
                 sys.exit()
             typ, data = imap.store(msg_id, '+FLAGS', '\\Seen')
+            logger.debug("Output type for append flag SEEN on mail server is %s", typ)
+            logger.debug("Output data for append flag SEEN on mail server is %s", data)
             time.sleep(5)
         continue
     imap.logout()
@@ -247,9 +256,9 @@ def send_email(in_mail_server, in_mail_l, in_mail_p,
         text = in_mail_body
     else:
         text = 'No body provided'
-    message = ('From: %s\n'
-               'To: %s\n'
-               'Subject: %s\n\n%s') % (from_mbox, ", ".join(to), subject, text)
+    message = (f'From: {from_mbox}\n'
+               f'To: {", ".join(to)}\n'
+               f'Subject: {subject}\n\n{text}')
     try:
         server = smtplib.SMTP(in_mail_server, 587)
         server.ehlo()
@@ -358,13 +367,13 @@ while True:
         logger.warning(traceback.format_exc())
         time.sleep(3)
         continue
-    for gate_address in data_r:        
+    for gate_address in data_r:
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         result = sock.connect_ex((gate_address, 443))
         if result == 0:
             ssh_client = ssh_connect(mktk_server, mktk_port, mktk_u, mktk_p)
             logger.info("Connected to MikroTik")
-            add_sstp_cmd = (
+            add_sstp_cmd = ( # pylint: disable=invalid-name
                             f"/interface sstp-client add "
                             f"name=sstp-out "
                             f"connect-to={gate_address} "
@@ -377,23 +386,17 @@ while True:
             exec_command(ssh_client, add_sstp_cmd)
             logger.info('SSTP created')
             time.sleep(5)
-            check_sstp_cmd = (
-                            f"/interface sstp-client monitor 0 once"
-                           )
+            check_sstp_cmd = "/interface sstp-client monitor 0 once" # pylint: disable=invalid-name
             out, err = exec_command(ssh_client, check_sstp_cmd)
             logger.info('SSTP checked')
             a = []
             if 'connected' in out:
                 logger.info('SSTP done')
-                rm_sstp_cmd = (
-                                f"/interface sstp-client remove 0"
-                               )
+                rm_sstp_cmd = "/interface sstp-client remove 0" # pylint: disable=invalid-name
                 out, err = exec_command(ssh_client, rm_sstp_cmd)
             else:
                 logger.info('SSTP not done')
-                rm_sstp_cmd = (
-                                f"/interface sstp-client remove 0"
-                               )
+                rm_sstp_cmd = "/interface sstp-client remove 0" # pylint: disable=invalid-name
                 out, err = exec_command(ssh_client, rm_sstp_cmd)
                 continue
             str_out = f'Gate address is {gate_address}' # pylint: disable=invalid-name
