@@ -9,6 +9,7 @@ import time
 import json
 import os.path
 import re
+import validators
 import sys
 import secrets
 import socket
@@ -17,6 +18,7 @@ import traceback
 import validators
 import random
 import pathlib
+from pathlib import Path
 from hashlib import md5
 import platform
 from os import listdir, sep, mkdir
@@ -29,8 +31,7 @@ from Crypto.Util.Padding import unpad
 from Crypto.Util.Padding import pad
 from Crypto.Cipher import AES
 
-IDENT = md5(';fadkjdf;lajkdf'.encode('UTF-8')).hexdigest()
-
+IDENT = md5(';fadkjdf;laafjkdf'.encode('UTF-8')).hexdigest()
 if platform.system() == 'Linux':
     try:
         lock = socket.socket(socket.AF_UNIX, socket.SOCK_DGRAM)
@@ -67,18 +68,16 @@ else:
     app_name = pathlib.Path(__file__).stem
     APP_RUNMODE = 'TEST'
 INPUT_DIR = f'{app_path}{sep}servers{sep}'
-LOG_DIR = f'{app_path}{sep}logs'
+LOG_DIR = f'{app_path}{sep}logs{sep}'
 
 if not exists(LOG_DIR):
     try:
-        mkdir(LOG_DIR)
+        Path(LOG_DIR).mkdir(parents=True, exist_ok=True)
     except Exception as ex: # pylint: disable=broad-exception-caught
         print('Log directory creation fails. Exit')
         sys.exit()
-LOG_FILENAME = f'{LOG_DIR}{sep}{app_name}_{LOG_START_TIME}.log'
+LOG_FILENAME = f'{LOG_DIR}{app_name}_{LOG_START_TIME}.log'
 log_handlers = [logging.StreamHandler(),logging.FileHandler(LOG_FILENAME)]
-
-
 logger = logging.getLogger(APP_RUNMODE)
 logging.basicConfig(format=LOG_FMT_STRING,
                     datefmt='%d.%m.%Y %H:%M:%S',
@@ -98,6 +97,7 @@ try:
 except Exception as ex: # pylint: disable=broad-exception-caught
     logger.critical("No config file found or it's not a valid json")
     sys.exit()
+
 
 try:
     mail_server = conf['mail_server']
@@ -128,7 +128,10 @@ if not validators.email(mail_to):
 if not validators.email(got_from):
     logger.critical("Email used as source is incorrect. Exit")
     sys.exit()
-    
+if not validators.url(f"https://{mktk_server}:{mktk_port}"):
+    logger.critical("Mikrotik server or port is incorrect. Exit")
+    sys.exit()
+
 def decrypt(ciphertext, password):
     """Decription Crypto-JS compatible"""
     encryptedData = base64.b64decode(ciphertext) # pylint: disable=invalid-name
@@ -217,7 +220,7 @@ def save_mails(in_mail_server, in_mail_l, in_mail_p):
             vy_password = "some password"
             # decrypted = decrypt(ciph_text, vy_password)
             decrypted = decrypt(attach, vy_password)
-            print("Decrypted ciphertext (base64):", decrypted)
+            logger.info("Decrypted ciphertext (base64): %s", decrypted)
             decrypted = base64.b64decode(decrypted)
             try:
                 open(INPUT_DIR+msg['Subject'], 'wb').write(decrypted)
@@ -225,6 +228,7 @@ def save_mails(in_mail_server, in_mail_l, in_mail_p):
                 logger.critical("Can't create write into input directories")
                 logger.critical("Exception is %s", str(ex))
                 sys.exit()
+            typ, data = imap.store(msg_id, '+FLAGS', '\\Seen')
             time.sleep(5)
         continue
     imap.logout()
@@ -257,6 +261,28 @@ def send_email(in_mail_server, in_mail_l, in_mail_p,
     except Exception as ex: # pylint: disable=broad-exception-caught
         logger.info('Connecting to %s', str(ex))
     return True
+
+def rotate_arch(in_dir, in_regexp, in_ext):
+    """Rotating only func"""
+    logger.info("Rotating files starts in directory %s with type %s", in_dir, in_regexp)
+    r_a_result = {'result': False, 'content': ''}
+    while True:
+        r_a_onlyfiles = [f for f in listdir(in_dir) if isfile(join(in_dir, f))]
+        if not r_a_onlyfiles:
+            r_a_result = {'result': True, 'content': f'There is nothing in directory {in_dir}'}
+            return r_a_result
+        r_a_file_filter_name = [el for el in r_a_onlyfiles if in_regexp in el]
+        if len(r_a_file_filter_name)>7:
+            r_a_file_filter = [int(af.split('-')[1].rstrip(in_ext)) for af in r_a_file_filter_name]
+            r_a_actual_files = min(r_a_file_filter)
+            r_a_actual_file = [af for af in r_a_onlyfiles if str(r_a_actual_files) in af]
+            r_a_direct_file = f"{in_dir}{r_a_actual_file[0]}"
+            os.remove(r_a_direct_file)
+        else:
+            r_a_result = {'result': True, 'content': 'Everything was rotated successfully'}
+            return r_a_result
+
+
 
 # see https://stackoverflow.com/a/25457500
 # imap.store(msg_id, '+FLAGS', '\\Deleted')
@@ -313,6 +339,7 @@ def send_email(in_mail_server, in_mail_l, in_mail_p,
 
 while True:
     result_gates = []
+    rotate_arch(INPUT_DIR, '.txt', '.txt')
     save_mails(mail_server, mail_l, mail_p)
     try:
         logger.info('Searching files in INPUT directory %s', INPUT_DIR)
