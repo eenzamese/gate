@@ -207,7 +207,7 @@ def save_mails(in_mail_server, in_mail_l, in_mail_p):
     status, search_data = imap.search(None, f'FROM "{got_from}" SINCE {l_time}')
     for msg_id in search_data[0].split():
         msg_id_str = msg_id.decode('utf-8')
-        logger.info("Fetching message %s of %s", msg_id_str, nmessages))
+        logger.info("Fetching message %s of %s", msg_id_str, nmessages)
         status, msg_data = imap.fetch(msg_id, '(RFC822)')
         msg_raw = msg_data[0][1]
         msg = email.message_from_bytes(msg_raw, _class = email.message.EmailMessage)
